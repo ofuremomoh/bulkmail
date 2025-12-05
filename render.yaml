@@ -1,0 +1,32 @@
+services:
+  # ----------------------------------------
+  # Flask Web App (Docker)
+  # ----------------------------------------
+  - type: web
+    name: flask-docker-app
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: FLASK_DEBUG
+        value: 0
+
+  # ----------------------------------------
+  # Celery Background Worker
+  # ----------------------------------------
+  - type: worker
+    name: celery-worker
+    env: python
+    plan: free
+    buildCommand: |
+
+      pip install -r requirements.txt
+
+    startCommand: celery -A celery_worker.celery worker --loglevel=info
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: FLASK_DEBUG
+        value: 0
